@@ -61,7 +61,7 @@ namespace StravaSharp
         }
 
         public async Task<UploadStatus> Upload(ActivityType activityType, DataType dataType, System.IO.Stream input, string fileName, string name = null, string description = null,
-            bool @private = false, bool commute = false)
+            bool @private = false, bool commute = false, string externalId = null)
         {
             var request = new RestRequest("/api/v3/uploads?data_type={data_type}&activity_type={activity_type}&private={private}&commute={commute}", Method.POST);
             if (name != null)
@@ -80,6 +80,10 @@ namespace StravaSharp
             request.AddParameter("activity_type", EnumHelper.ToString(activityType), ParameterType.UrlSegment);
             request.AddParameter("private", @private ? 1 : 0, ParameterType.UrlSegment);
             request.AddParameter("commute", commute ? 1 : 0, ParameterType.UrlSegment);
+            if (externalId != null) 
+            {
+                request.AddParameter("external_id", externalId, ParameterType.UrlSegment);
+            }
             request.AddFile("file", input, Uri.EscapeDataString(fileName));
             var response = await _client.RestClient.Execute<UploadStatus>(request);
             return response.Data;
